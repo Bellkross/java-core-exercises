@@ -11,8 +11,11 @@ import java.util.Arrays;
 public class LinkedList<T> implements List<T> {
 
     private Node<T> head;
+    private int size;
 
     public LinkedList() {
+        head = null;
+        size = 0;
     }
 
     /**
@@ -35,15 +38,12 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void add(T element) {
-        if (head == null) {
-            head = new Node<>(element);
-            return;
-        }
-        Node<T> current = head;
-        while (current.next != null) {
-            current = current.next;
-        }
-        current.next = new Node<>(element);
+        Node<T> newNode = new Node<>(element);
+        if (head == null)
+            head = newNode;
+        else
+            getLastNode().next = newNode;
+        ++size;
     }
 
     /**
@@ -94,6 +94,10 @@ public class LinkedList<T> implements List<T> {
         getNodeAt(index).setValue(element);
     }
 
+
+    private Node<T> getLastNode() {
+        return getNodeAt(size() - 1);
+    }
     private Node<T> getNodeAt(int index) {
         int counter = 0;
         Node<T> current = head;
