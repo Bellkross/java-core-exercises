@@ -55,6 +55,14 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void add(int index, T element) {
+        if (index < 0 || index >= size())
+            throw new IndexOutOfBoundsException();
+        if (index == 0) {
+            Node<T> newHead = new Node<>(element);
+            newHead.next = head;
+            head = newHead;
+            return;
+        }
         int counter = 0;
         Node<T> current = head;
         while (++counter != index) {
