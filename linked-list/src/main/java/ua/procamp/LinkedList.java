@@ -79,9 +79,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void set(int index, T element) {
-        Objects.checkFromIndexSize(0, index, size());
-        if (isEmpty())
-            throw new IndexOutOfBoundsException();
+        Objects.checkIndex(index, size());
         getNodeAt(index).setValue(element);
     }
 
@@ -96,8 +94,6 @@ public class LinkedList<T> implements List<T> {
         while (counter != index) {
             ++counter;
             current = current.next;
-            if (current == null)
-                throw new IndexOutOfBoundsException();
         }
         return current;
     }
