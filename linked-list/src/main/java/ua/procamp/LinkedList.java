@@ -55,7 +55,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void add(int index, T element) {
-        if (index < 0 || index >= size())
+        if (index < 0 || index > size())
             throw new IndexOutOfBoundsException();
         if (index == 0) {
             Node<T> newHead = new Node<>(element);
@@ -89,6 +89,8 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void set(int index, T element) {
+        if (head == null)
+            throw new IndexOutOfBoundsException();
         getNodeAt(index).setValue(element);
     }
 
@@ -126,6 +128,8 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void remove(int index) {
+        if (head == null)
+            throw new IndexOutOfBoundsException();
         if (index == 0) {
             head = head.next;
             return;
