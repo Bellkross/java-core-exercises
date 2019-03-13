@@ -80,6 +80,8 @@ public class LinkedList<T> implements List<T> {
     @Override
     public void set(int index, T element) {
         Objects.checkFromIndexSize(0, index, size());
+        if (isEmpty())
+            throw new IndexOutOfBoundsException();
         getNodeAt(index).setValue(element);
     }
 
