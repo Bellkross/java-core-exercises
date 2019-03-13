@@ -67,6 +67,7 @@ public class LinkedList<T> implements List<T> {
                 newNode.next = current.next;
             current.next = newNode;
         }
+        ++size;
     }
 
     /**
@@ -78,8 +79,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void set(int index, T element) {
-        if (head == null)
-            throw new IndexOutOfBoundsException();
+        Objects.checkFromIndexSize(0, index, size());
         getNodeAt(index).setValue(element);
     }
 
