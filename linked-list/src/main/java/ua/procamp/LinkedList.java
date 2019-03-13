@@ -162,12 +162,6 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public int size() {
-        int size = 0;
-        Node<T> curr = head;
-        while (curr != null) {
-            ++size;
-            curr = curr.next;
-        }
         return size;
     }
 
