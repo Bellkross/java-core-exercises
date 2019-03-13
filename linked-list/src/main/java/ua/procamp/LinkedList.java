@@ -152,7 +152,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public boolean isEmpty() {
-        return head == null || head.value == null;
+        return size() == 0;
     }
 
     /**
