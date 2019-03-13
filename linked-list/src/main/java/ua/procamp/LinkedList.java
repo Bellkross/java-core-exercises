@@ -117,15 +117,15 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void remove(int index) {
-        if (head == null)
-            throw new IndexOutOfBoundsException();
+        Objects.checkIndex(index, size());
         if (index == 0) {
             head = head.next;
-            return;
+        } else {
+            Node<T> prev = getNodeAt(index - 1);
+            Node<T> removable = getNodeAt(index);
+            prev.next = removable.next;
         }
-        Node<T> prev = getNodeAt(index - 1);
-        Node<T> targetNode = getNodeAt(index);
-        prev.next = targetNode.next;
+        --size;
     }
 
 
