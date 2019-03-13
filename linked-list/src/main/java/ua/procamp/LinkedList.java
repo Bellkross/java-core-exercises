@@ -1,6 +1,7 @@
 package ua.procamp;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * {@link LinkedList} is a list implementation that is based on singly linked generic nodes. A node is implemented as
@@ -55,28 +56,16 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void add(int index, T element) {
-        if (index < 0 || index > size())
-            throw new IndexOutOfBoundsException();
-        if (index == 0) {
-            Node<T> newHead = new Node<>(element);
-            newHead.next = head;
-            head = newHead;
-            return;
-        }
-        int counter = 0;
-        Node<T> current = head;
-        while (++counter != index) {
-            current = current.next;
-            if (current == null)
-                throw new IndexOutOfBoundsException();
-        }
+        Objects.checkFromIndexSize(0, index, size());
         Node<T> newNode = new Node<>(element);
-        if (current.next == null) {
-            current.next = newNode;
+        if (index == 0) {
+            newNode.next = head;
+            head = newNode;
         } else {
-            Node<T> tmp = current.next;
+            Node<T> current = getNodeAt(index - 1);
+            if (current.next != null)
+                newNode.next = current.next;
             current.next = newNode;
-            current.next.next = tmp;
         }
     }
 
@@ -98,6 +87,7 @@ public class LinkedList<T> implements List<T> {
     private Node<T> getLastNode() {
         return getNodeAt(size() - 1);
     }
+
     private Node<T> getNodeAt(int index) {
         int counter = 0;
         Node<T> current = head;
