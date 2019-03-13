@@ -116,6 +116,10 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void remove(int index) {
+        if (index == 0) {
+            head = head.next;
+            return;
+        }
         Node<T> prev = getNodeAt(index - 1);
         Node<T> targetNode = getNodeAt(index);
         prev.next = targetNode.next;
