@@ -91,10 +91,8 @@ public class LinkedList<T> implements List<T> {
     private Node<T> getNodeAt(int index) {
         int counter = 0;
         Node<T> current = head;
-        while (counter != index) {
-            ++counter;
+        while (counter++ != index)
             current = current.next;
-        }
         return current;
     }
 
