@@ -80,7 +80,7 @@ public class LinkedList<T> implements List<T> {
     @Override
     public void set(int index, T element) {
         Objects.checkIndex(index, size());
-        getNodeAt(index).setValue(element);
+        getNodeAt(index).value = element;
     }
 
 
@@ -106,7 +106,7 @@ public class LinkedList<T> implements List<T> {
     @Override
     public T get(int index) {
         Objects.checkIndex(index, size());
-        return getNodeAt(index).getValue();
+        return getNodeAt(index).value;
     }
 
     /**
@@ -179,29 +179,14 @@ public class LinkedList<T> implements List<T> {
         private T value;
         private Node<T> next;
 
-        public Node(final T value) {
+        Node(final T value) {
             this(value, null);
         }
 
-        public Node(final T value, final Node<T> next) {
+        Node(final T value, final Node<T> next) {
             this.value = value;
             this.next = next;
         }
 
-        public T getValue() {
-            return value;
-        }
-
-        public void setValue(final T value) {
-            this.value = value;
-        }
-
-        public Node<T> getNext() {
-            return next;
-        }
-
-        public void setNext(final Node<T> next) {
-            this.next = next;
-        }
     }
 }
