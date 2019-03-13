@@ -40,7 +40,7 @@ public class LinkedList<T> implements List<T> {
     @Override
     public void add(T element) {
         Node<T> newNode = new Node<>(element);
-        if (head == null)
+        if (isEmpty())
             head = newNode;
         else
             getLastNode().next = newNode;
