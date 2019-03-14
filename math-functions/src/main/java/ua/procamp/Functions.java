@@ -14,7 +14,11 @@ public class Functions {
     public static FunctionMap<Integer, Integer> intFunctionMap() {
         FunctionMap<Integer, Integer> intFunctionMap = new FunctionMap<>();
 
-        // todo: add simple functions to the function map (abs, sng, increment, decrement, square)
+        intFunctionMap.addFunction("abs", x -> x * (x < 0 ? -1 : 1));
+        intFunctionMap.addFunction("sgn", x -> x == 0 ? 0 : Math.abs(x)/x);
+        intFunctionMap.addFunction("increment", x -> ++x);
+        intFunctionMap.addFunction("decrement", x -> --x);
+        intFunctionMap.addFunction("square", x -> x*x);
 
         return intFunctionMap;
     }
