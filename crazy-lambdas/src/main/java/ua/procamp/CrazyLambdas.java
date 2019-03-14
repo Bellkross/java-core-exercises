@@ -154,15 +154,8 @@ public class CrazyLambdas {
      * @return a binary function that receiver predicate and function and compose them to create a new function
      */
     public static BiFunction<IntUnaryOperator, IntPredicate, IntUnaryOperator> functionToConditionalFunction() {
-        return (unaryOperator, intPredicate) -> {
-            return operand -> {
-                if (intPredicate.test(operand)) {
-                    return unaryOperator.applyAsInt(operand);
-                } else {
-                    return operand;
-                }
-            };
-        };
+        return (unaryOperator, intPredicate) -> operand ->
+                intPredicate.test(operand) ? unaryOperator.applyAsInt(operand) : operand;
     }
 
     /**
