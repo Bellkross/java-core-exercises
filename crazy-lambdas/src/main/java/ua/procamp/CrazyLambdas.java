@@ -137,10 +137,10 @@ public class CrazyLambdas {
      * @return a function that transforms runnable into a thread supplier
      */
     public static Function<Runnable, Supplier<Thread>> runnableToThreadSupplierFunction() {
-        return runnable -> {
+        return runnable -> () -> {
             Thread startedThread = new Thread(runnable);
             startedThread.start();
-            return () -> startedThread;
+            return startedThread;
         };
     }
 
