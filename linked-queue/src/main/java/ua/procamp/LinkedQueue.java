@@ -1,5 +1,7 @@
 package ua.procamp;
 
+import static java.util.Objects.isNull;
+
 /**
  * {@link LinkedQueue} implements FIFO {@link Queue}, using singly linked nodes. Nodes are stores in instances of nested
  * class Node. In order to perform operations {@link LinkedQueue#add(Object)} and {@link LinkedQueue#poll()}
@@ -9,13 +11,34 @@ package ua.procamp;
  */
 public class LinkedQueue<T> implements Queue<T> {
 
+    private Node<T> head;
+    private Node<T> lastNode;
+    private int size;
+
+    public LinkedQueue() {
+        this.head = new Node<>();
+        lastNode = this.head;
+        size = 0;
+    }
+
     /**
      * Adds an element to the end of the queue.
      *
      * @param element the element to add
      */
     public void add(T element) {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        if (isNull(head.value)) {
+            head.value = element;
+        } else {
+            Node<T> newNode = new Node<>(element);
+            if (isNull(head.next)) {
+                head.next = newNode;
+            } else {
+                lastNode.next = newNode;
+            }
+            lastNode = lastNode.next;
+        }
+        ++size;
     }
 
     /**
@@ -24,7 +47,13 @@ public class LinkedQueue<T> implements Queue<T> {
      * @return an element that was retrieved from the head or null if queue is empty
      */
     public T poll() {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        T firstElement = null;
+        if (!isEmpty()) {
+            firstElement = head.value;
+            head = head.next;
+        }
+        --size;
+        return firstElement;
     }
 
     /**
@@ -33,7 +62,7 @@ public class LinkedQueue<T> implements Queue<T> {
      * @return an integer value that is a size of queue
      */
     public int size() {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        return size;
     }
 
     /**
@@ -42,6 +71,24 @@ public class LinkedQueue<T> implements Queue<T> {
      * @return {@code true} if the queue is empty, returns {@code false} if it's not
      */
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
+        return size() == 0;
+    }
+
+    private class Node<T> {
+        private T value;
+        private Node<T> next;
+
+        public Node() {
+            this(null);
+        }
+
+        public Node(T value) {
+            this(value, null);
+        }
+
+        public Node(T value, Node<T> next) {
+            this.value = value;
+            this.next = next;
+        }
     }
 }

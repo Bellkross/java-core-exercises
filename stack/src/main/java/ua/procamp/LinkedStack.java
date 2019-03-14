@@ -1,25 +1,67 @@
 package ua.procamp;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import ua.procamp.exception.EmptyStackException;
 
 public class LinkedStack<T> implements Stack<T> {
 
-	@Override
-	public void push(T element) {
-		throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
-	}
+    private Node<T> head;
+    private int size;
 
-	@Override
-	public T pop() {
-		throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
-	}
+    public LinkedStack() {
+        this.head = new Node<>();
+        size = 0;
+    }
 
-	@Override
-	public int size() {
-		throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
-	}
+    @Override
+    public void push(T element) {
+        if (isNull(head.value)) {
+            head.value = element;
+        } else {
+            head = new Node<>(element, head);
+        }
+        ++size;
+    }
 
-	@Override
-	public boolean isEmpty() {
-		throw new UnsupportedOperationException("This method is not implemented yet"); // todo: implement this method
-	}
+    @Override
+    public T pop() {
+        if (isEmpty()) {
+            throw new EmptyStackException();
+        }
+        T result = head.value;
+        if (nonNull(head.next)) {
+            head = head.next;
+            --size;
+        }
+        return result;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    private class Node<T> {
+        private T value;
+        private Node<T> next;
+
+        public Node() {
+            this(null);
+        }
+
+        public Node(T value) {
+            this(value, null);
+        }
+
+        public Node(T value, Node<T> next) {
+            this.value = value;
+            this.next = next;
+        }
+    }
 }
