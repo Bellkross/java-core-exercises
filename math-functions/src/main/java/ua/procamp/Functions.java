@@ -16,8 +16,8 @@ public class Functions {
 
         intFunctionMap.addFunction("abs", x -> x * (x < 0 ? -1 : 1));
         intFunctionMap.addFunction("sgn", x -> x == 0 ? 0 : Math.abs(x)/x);
-        intFunctionMap.addFunction("increment", x -> ++x);
-        intFunctionMap.addFunction("decrement", x -> --x);
+        intFunctionMap.addFunction("increment", x -> x + 1);
+        intFunctionMap.addFunction("decrement", x -> x - 1);
         intFunctionMap.addFunction("square", x -> x*x);
 
         return intFunctionMap;
