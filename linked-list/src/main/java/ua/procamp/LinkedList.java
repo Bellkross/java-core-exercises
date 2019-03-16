@@ -2,6 +2,9 @@ package ua.procamp;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
+
+import static java.util.Objects.nonNull;
 
 /**
  * {@link LinkedList} is a list implementation that is based on singly linked generic nodes. A node is implemented as
@@ -39,12 +42,7 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void add(T element) {
-        Node<T> newNode = new Node<>(element);
-        if (isEmpty())
-            head = newNode;
-        else
-            getLastNode().next = newNode;
-        ++size;
+        add(size(), element);
     }
 
     /**
@@ -56,15 +54,16 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public void add(int index, T element) {
-        Objects.checkFromIndexSize(0, index, size());
+        Objects.checkIndex(index, size() + 1);
         Node<T> newNode = new Node<>(element);
         if (index == 0) {
             newNode.next = head;
             head = newNode;
         } else {
             Node<T> current = getNodeAt(index - 1);
-            if (current.next != null)
+            if (nonNull(current.next)) {
                 newNode.next = current.next;
+            }
             current.next = newNode;
         }
         ++size;
@@ -83,17 +82,9 @@ public class LinkedList<T> implements List<T> {
         getNodeAt(index).value = element;
     }
 
-
-    private Node<T> getLastNode() {
-        return getNodeAt(size() - 1);
-    }
-
     private Node<T> getNodeAt(int index) {
-        int counter = 0;
-        Node<T> current = head;
-        while (counter++ != index)
-            current = current.next;
-        return current;
+        return Stream.iterate(head, Objects::nonNull, node -> node.next)
+                .skip(index).findFirst().orElseThrow(IndexOutOfBoundsException::new);
     }
 
     /**
@@ -122,8 +113,7 @@ public class LinkedList<T> implements List<T> {
             head = head.next;
         } else {
             Node<T> prev = getNodeAt(index - 1);
-            Node<T> removable = getNodeAt(index);
-            prev.next = removable.next;
+            prev.next = prev.next.next;
         }
         --size;
     }
@@ -136,13 +126,8 @@ public class LinkedList<T> implements List<T> {
      */
     @Override
     public boolean contains(T element) {
-        Node<T> current = head;
-        while (current != null) {
-            if (current.value.equals(element))
-                return true;
-            current = current.next;
-        }
-        return false;
+        return Stream.iterate(head, Objects::nonNull, node -> node.next)
+                .anyMatch(node -> node.value.equals(element));
     }
 
     /**
