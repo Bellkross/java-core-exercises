@@ -7,7 +7,6 @@ import ua.procamp.model.Sex;
 import java.math.BigDecimal;
 import java.time.Month;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
@@ -59,21 +58,8 @@ public class AccountAnalytics {
      * @return a map where key is true or false, and value is list of male, and female accounts
      */
     public Map<Boolean, List<Account>> partitionMaleAccounts() {
-        Map<Boolean, List<Account>> result = new HashMap<>();
-        boolean maleListCode = true;
-        boolean femaleListCode = !maleListCode;
-        result.put(maleListCode,
-                accounts.stream()
-                        .filter(account -> account.getSex().equals(Sex.MALE))
-                        .collect(Collectors.toList())
-        );
-        result.put(femaleListCode,
-                accounts.stream()
-                        .filter(account -> account.getSex().equals(Sex.FEMALE))
-                        .collect(Collectors.toList())
-        );
-
-        return result;
+        return accounts.stream()
+                .collect(partitioningBy(account -> account.getSex().equals(Sex.MALE)));
     }
 
     /**
