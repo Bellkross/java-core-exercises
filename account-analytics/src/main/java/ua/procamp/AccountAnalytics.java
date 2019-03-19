@@ -9,6 +9,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
 
@@ -26,8 +27,8 @@ public class AccountAnalytics {
         return new AccountAnalytics(accounts);
     }
 
-    private static String getDomainOfEmail(String email) {
-        return email.substring(email.indexOf('@') + 1);
+    private static String getEmailDomain(String email) {
+        return email.split("@")[1];
     }
 
     /**
@@ -36,7 +37,7 @@ public class AccountAnalytics {
      * @return account with max balance wrapped with optional
      */
     public Optional<Account> findRichestPerson() {
-        return accounts.stream().max(Comparator.comparing(Account::getBalance));
+        return accounts.stream().max(comparing(Account::getBalance));
     }
 
     /**
@@ -47,8 +48,8 @@ public class AccountAnalytics {
      */
     public List<Account> findAccountsByBirthdayMonth(Month birthdayMonth) {
         return accounts.stream()
-                .filter(account -> account.getBirthday().getMonth().equals(birthdayMonth))
-                .collect(Collectors.toList());
+                .filter(a -> a.getBirthday().getMonth().equals(birthdayMonth))
+                .collect(toList());
     }
 
     /**
@@ -59,7 +60,7 @@ public class AccountAnalytics {
      */
     public Map<Boolean, List<Account>> partitionMaleAccounts() {
         return accounts.stream()
-                .collect(partitioningBy(account -> account.getSex().equals(Sex.MALE)));
+                .collect(partitioningBy(a -> a.getSex().equals(Sex.MALE)));
     }
 
     /**
@@ -70,7 +71,7 @@ public class AccountAnalytics {
      */
     public Map<String, List<Account>> groupAccountsByEmailDomain() {
         return accounts.stream()
-                .collect(Collectors.groupingBy(account -> getDomainOfEmail(account.getEmail())));
+                .collect(groupingBy(a -> getEmailDomain(a.getEmail())));
     }
 
     /**
@@ -80,9 +81,8 @@ public class AccountAnalytics {
      */
     public int getNumOfLettersInFirstAndLastNames() {
         return accounts.stream()
-                .map(account -> account.getFirstName() + account.getLastName())
-                .map(String::length)
-                .reduce((a, b) -> a + b).orElse(0);
+                .mapToInt(a -> a.getFirstName().length() + a.getLastName().length())
+                .sum();
     }
 
     /**
@@ -93,8 +93,7 @@ public class AccountAnalytics {
     public BigDecimal calculateTotalBalance() {
         return accounts.stream()
                 .map(Account::getBalance)
-                .reduce(BigDecimal::add)
-                .orElse(new BigDecimal(0));
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     /**
@@ -104,8 +103,8 @@ public class AccountAnalytics {
      */
     public List<Account> sortByFirstAndLastNames() {
         return accounts.stream()
-                .sorted(Comparator.comparing(Account::getLastName))
-                .sorted(Comparator.comparing(Account::getFirstName))
+                .sorted(comparing(Account::getFirstName)
+                        .thenComparing(Account::getLastName))
                 .collect(Collectors.toList());
     }
 
@@ -117,7 +116,8 @@ public class AccountAnalytics {
      */
     public boolean containsAccountWithEmailDomain(String emailDomain) {
         return accounts.stream()
-                .anyMatch(account -> getDomainOfEmail(account.getEmail()).equals(emailDomain));
+                .map(Account::getEmail)
+                .anyMatch(email -> getEmailDomain(email).equals(emailDomain));
     }
 
     /**
@@ -142,7 +142,7 @@ public class AccountAnalytics {
      */
     public Map<Long, Account> collectAccountsById() {
         return accounts.stream()
-                .collect(Collectors.toMap(Account::getId, account -> account));
+                .collect(Collectors.toMap(Account::getId, identity()));
     }
 
     /**
@@ -180,7 +180,7 @@ public class AccountAnalytics {
                 groupingBy(account -> account.getBirthday().getMonth(),
                         mapping(
                                 Account::getFirstName,
-                                joining(", ", "", "")
+                                joining(", ")
                         )
                 )
         );
@@ -194,10 +194,9 @@ public class AccountAnalytics {
      */
     public Map<Month, BigDecimal> groupTotalBalanceByCreationMonth() {
         return accounts.stream().collect(
-                groupingBy(account -> account.getCreationDate().getMonth(),
-                        reducing(new BigDecimal(0),
-                                Account::getBalance,
-                                BigDecimal::add)
+                groupingBy(a -> a.getCreationDate().getMonth(),
+                        mapping(Account::getBalance,
+                                reducing(BigDecimal.ZERO, BigDecimal::add))
                 ));
     }
 
@@ -224,7 +223,8 @@ public class AccountAnalytics {
     public Map<Character, Long> getCharacterFrequencyIgnoreCaseInFirstAndLastNames() {
         return accounts.stream()
                 .map(account -> account.getFirstName() + account.getLastName())
-                .flatMapToInt(str -> str.toLowerCase().chars())
+                .map(String::toLowerCase)
+                .flatMapToInt(String::chars)
                 .mapToObj(c -> (char) c)
                 .collect(groupingBy(identity(), counting()));
     }
