@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Objects.isNull;
+
 /**
  * {@link FileReaders} privides an API that allow to read whole file into a {@link String} by file name.
  */
@@ -32,6 +34,9 @@ public class FileReaders {
         Objects.requireNonNull(fileName);
         URL fileUrl = FileReaders.class.getClassLoader().getResource(fileName);
         try {
+            if (isNull(fileUrl)) {
+                throw new FileReaderException("Invalid file URL");
+            }
             return Paths.get(fileUrl.toURI());
         } catch (URISyntaxException e) {
             throw new FileReaderException("Invalid file URL", e);
