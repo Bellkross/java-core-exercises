@@ -7,71 +7,67 @@ import static java.util.Objects.nonNull;
 
 public class RecursiveBinarySearchTree<T extends Comparable<T>> implements BinarySearchTree<T> {
 
-    private T value;
-    private RecursiveBinarySearchTree<T> left;
-    private RecursiveBinarySearchTree<T> right;
+    private Node<T> root;
     private int size;
 
     public RecursiveBinarySearchTree() {
-        value = null;
-        left = null;
-        right = null;
+        root = new Node<>();
         size = 0;
     }
 
     public RecursiveBinarySearchTree(T value) {
-        this.value = value;
-        left = null;
-        right = null;
+        root = new Node<>(value);
         size = 1;
     }
 
     @Override
     public boolean insert(T element) {
-        boolean result = false;
+        boolean isInserted = insert(root, element);
+
+        if (isInserted) ++size;
+
+        return isInserted;
+    }
+
+    private boolean insert(Node<T> target, T element) {
+        boolean isInserted = false;
         if (size() == 0) {
-            value = element;
-            ++size;
+            target.value = element;
             return true;
         }
 
-        if (less(element, value)) {
-            if (isNull(left)) {
-                left = new RecursiveBinarySearchTree<>(element);
-                result = true;
+        if (less(element, target.value)) {
+            if (isNull(target.left)) {
+                target.left = new Node<>(element);
+                isInserted = true;
             } else {
-                result = left.insert(element);
-            }
-        } else if (less(value, element)) {
-            if (isNull(right)) {
-                right = new RecursiveBinarySearchTree<>(element);
-                result = true;
-            } else {
-                result = right.insert(element);
+                isInserted = insert(target.left, element);
             }
         }
-        if (result) ++size;
-        return result;
+
+        if (less(target.value, element)) {
+            if (isNull(target.right)) {
+                target.right = new Node<>(element);
+                isInserted = true;
+            } else {
+                isInserted = insert(target.right, element);
+            }
+        }
+
+        return isInserted;
     }
 
     @Override
     public boolean search(T element) {
-        if (isNull(value)) return false;
-        if (value.equals(element)) return true;
+        return search(root, element);
+    }
 
-        if (less(element, value)) {
-            if (isNull(left)) {
-                return false;
-            } else {
-                return left.search(element);
-            }
-        } else {
-            if (isNull(right)) {
-                return false;
-            } else {
-                return right.search(element);
-            }
+    private boolean search(Node<T> target, T element) {
+        if (isNull(target) || isNull(target.value)) {
+            return false;
         }
+
+        return target.value.equals(element) || search(target.left, element) || search(target.right, element);
     }
 
     @Override
@@ -81,38 +77,66 @@ public class RecursiveBinarySearchTree<T extends Comparable<T>> implements Binar
 
     @Override
     public int height() {
-        if (isNull(value)) return 0;
-        if (isNull(left) && isNull(right)) {
+        return height(root);
+    }
+
+    private int height(Node<T> target) {
+        boolean isEmpty = size() == 0;
+        boolean hasNoChild = isNull(target.left) && isNull(target.right);
+        if (isEmpty || hasNoChild) {
             return 0;
         }
-        if (nonNull(left) && nonNull(right)) {
-            return 1 + Math.max(left.height(), right.height());
+        boolean hasLeftChild = nonNull(target.left);
+        boolean hasRightChild = nonNull(target.right);
+        if (hasLeftChild && hasRightChild) {
+            return 1 + Math.max(height(target.left), height(target.right));
         }
-        if (nonNull(left)) {
-            return 1 + left.height();
+        if (hasLeftChild) {
+            return 1 + height(target.left);
         } else {
-            return 1 + right.height();
+            return 1 + height(target.right);
         }
     }
 
 
     @Override
     public void inOrderTraversal(Consumer<T> consumer) {
-        if (nonNull(left)) {
-            left.inOrderTraversal(consumer);
+        inOrderTraversal(root, consumer);
+    }
+
+    private void inOrderTraversal(Node<T> target, Consumer<T> consumer) {
+        if (nonNull(target.left)) {
+            inOrderTraversal(target.left, consumer);
         }
 
-        if (nonNull(value)) {
-            consumer.accept(value);
+        if (nonNull(target) && nonNull(target.value)) {
+            consumer.accept(target.value);
         }
 
-        if (nonNull(right)) {
-            right.inOrderTraversal(consumer);
+        if (nonNull(target.right)) {
+            inOrderTraversal(target.right, consumer);
         }
     }
 
     private boolean less(T l, T r) {
         return l.compareTo(r) < 0;
+    }
+
+    private static class Node<T> {
+        T value;
+        Node<T> left;
+        Node<T> right;
+
+        public Node() {
+            this(null);
+        }
+
+        public Node(T value) {
+            this.value = value;
+            left = null;
+            right = null;
+        }
+
     }
 
 }
