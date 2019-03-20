@@ -6,14 +6,27 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import static java.util.Objects.isNull;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingInt;
 
 /**
  * {@link FileStats} provides an API that allow to get character statistic based on text file. All whitespace characters
  * are ignored.
  */
 public class FileStats {
+
+    private final Map<Character, Integer> charsHistogram;
+
+    private FileStats(final Map<Character, Integer> charsHistogram) {
+        this.charsHistogram = charsHistogram;
+    }
     /**
      * Creates a new immutable {@link FileStats} objects using data from text file received as a parameter.
      *
@@ -21,7 +34,13 @@ public class FileStats {
      * @return new FileStats object created from text file
      */
     public static FileStats from(String fileName) {
-        throw new UnsupportedOperationException("It's your job to make it work!"); //todo
+        Stream<String> stringStream = openFileLinesStream(getPathFromFileName(fileName));
+        Map<Character, Integer> histogram = stringStream
+                .flatMapToInt(String::chars)
+                .filter(c -> c != ' ')
+                .mapToObj(c -> (char) c)
+                .collect(groupingBy(identity(), summingInt(ch -> 1)));
+        return new FileStats(histogram);
     }
 
     /**
@@ -31,7 +50,7 @@ public class FileStats {
      * @return a number that shows how many times this character appeared in a text file
      */
     public int getCharCount(char character) {
-        throw new UnsupportedOperationException("It's your job to make it work!"); //todo
+        return charsHistogram.get(character);
     }
 
     /**
@@ -40,7 +59,8 @@ public class FileStats {
      * @return the most frequently appeared character
      */
     public char getMostPopularCharacter() {
-        throw new UnsupportedOperationException("It's your job to make it work!"); //todo
+        return charsHistogram.keySet().stream().max(Comparator.comparing(charsHistogram::get))
+                .orElseThrow(() -> new FileStatsException("Attempt to query empty file stats!"));
     }
 
     /**
@@ -50,13 +70,16 @@ public class FileStats {
      * @return {@code true} if this character has appeared in the text, and {@code false} otherwise
      */
     public boolean containsCharacter(char character) {
-        throw new UnsupportedOperationException("It's your job to make it work!"); //todo
+        return charsHistogram.containsKey(character);
     }
 
     private static Path getPathFromFileName(String fileName) {
         Objects.requireNonNull(fileName);
         URL fileUrl = FileStats.class.getClassLoader().getResource(fileName);
         try {
+            if (isNull(fileUrl)) {
+                throw new FileStatsException("Invalid file URL");
+            }
             return Paths.get(fileUrl.toURI());
         } catch (URISyntaxException e) {
             throw new FileStatsException("Invalid file URL", e);
