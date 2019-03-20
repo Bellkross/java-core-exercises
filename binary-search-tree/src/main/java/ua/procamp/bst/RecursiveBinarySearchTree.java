@@ -76,21 +76,11 @@ public class RecursiveBinarySearchTree<T extends Comparable<T>> implements Binar
     }
 
     private int height(Node<T> target) {
-        boolean isEmpty = size() == 0;
-        boolean hasNoChild = isNull(target.left) && isNull(target.right);
-        if (isEmpty || hasNoChild) {
+        boolean isEmpty = isNull(target) || isNull(target.value);
+        if (isEmpty || (isNull(target.left) && isNull(target.right))) {
             return 0;
         }
-        boolean hasLeftChild = nonNull(target.left);
-        boolean hasRightChild = nonNull(target.right);
-        if (hasLeftChild && hasRightChild) {
-            return 1 + Math.max(height(target.left), height(target.right));
-        }
-        if (hasLeftChild) {
-            return 1 + height(target.left);
-        } else {
-            return 1 + height(target.right);
-        }
+        return 1 + Math.max(height(target.left), height(target.right));
     }
 
 
