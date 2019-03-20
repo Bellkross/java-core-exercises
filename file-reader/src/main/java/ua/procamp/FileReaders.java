@@ -1,8 +1,14 @@
 package ua.procamp;
 
+import ua.procamp.exceptions.FileReaderException;
+
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,13 +24,26 @@ public class FileReaders {
      * @return string that holds whole file content
      */
     public static String readWholeFile(String fileName) {
-        String testFolderPath = "src\\test\\resources\\";
-        try (Stream<String> stringStream = Files.lines(Paths.get(testFolderPath + fileName))) {
-            return stringStream.collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            e.printStackTrace();
+        Stream<String> stringStream = openFileLinesStream(getPathFromFileName(fileName));
+        return stringStream.collect(Collectors.joining("\n"));
+    }
+
+    private static Path getPathFromFileName(String fileName) {
+        Objects.requireNonNull(fileName);
+        URL fileUrl = FileReaders.class.getClassLoader().getResource(fileName);
+        try {
+            return Paths.get(fileUrl.toURI());
+        } catch (URISyntaxException e) {
+            throw new FileReaderException("Invalid file URL", e);
         }
-        return "";
+    }
+
+    private static Stream<String> openFileLinesStream(Path filePath) {
+        try {
+            return Files.lines(filePath);
+        } catch (IOException e) {
+            throw new FileReaderException("Cannot create stream of file lines!", e);
+        }
     }
 
 }
