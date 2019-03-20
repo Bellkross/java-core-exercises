@@ -15,11 +15,6 @@ public class RecursiveBinarySearchTree<T extends Comparable<T>> implements Binar
         size = 0;
     }
 
-    public RecursiveBinarySearchTree(T value) {
-        root = new Node<>(value);
-        size = 1;
-    }
-
     @Override
     public boolean insert(T element) {
         boolean isInserted = insert(root, element);
