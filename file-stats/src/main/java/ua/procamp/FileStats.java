@@ -1,5 +1,14 @@
 package ua.procamp;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 /**
  * {@link FileStats} provides an API that allow to get character statistic based on text file. All whitespace characters
  * are ignored.
@@ -42,5 +51,23 @@ public class FileStats {
      */
     public boolean containsCharacter(char character) {
         throw new UnsupportedOperationException("It's your job to make it work!"); //todo
+    }
+
+    private static Path getPathFromFileName(String fileName) {
+        Objects.requireNonNull(fileName);
+        URL fileUrl = FileStats.class.getClassLoader().getResource(fileName);
+        try {
+            return Paths.get(fileUrl.toURI());
+        } catch (URISyntaxException e) {
+            throw new FileStatsException("Invalid file URL", e);
+        }
+    }
+
+    private static Stream<String> openFileLinesStream(Path filePath) {
+        try {
+            return Files.lines(filePath);
+        } catch (IOException e) {
+            throw new FileStatsException("Cannot create stream of file lines!", e);
+        }
     }
 }
