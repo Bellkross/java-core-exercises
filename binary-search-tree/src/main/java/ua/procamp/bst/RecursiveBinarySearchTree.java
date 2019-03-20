@@ -3,7 +3,6 @@ package ua.procamp.bst;
 import java.util.function.Consumer;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 public class RecursiveBinarySearchTree<T extends Comparable<T>> implements BinarySearchTree<T> {
 
@@ -90,17 +89,12 @@ public class RecursiveBinarySearchTree<T extends Comparable<T>> implements Binar
     }
 
     private void inOrderTraversal(Node<T> target, Consumer<T> consumer) {
-        if (nonNull(target.left)) {
-            inOrderTraversal(target.left, consumer);
+        if (isNull(target) || isNull(target.value)) {
+            return;
         }
-
-        if (nonNull(target) && nonNull(target.value)) {
-            consumer.accept(target.value);
-        }
-
-        if (nonNull(target.right)) {
-            inOrderTraversal(target.right, consumer);
-        }
+        inOrderTraversal(target.left, consumer);
+        consumer.accept(target.value);
+        inOrderTraversal(target.right, consumer);
     }
 
     private boolean less(T l, T r) {
