@@ -24,31 +24,35 @@ public class RecursiveBinarySearchTree<T extends Comparable<T>> implements Binar
     }
 
     private boolean insert(Node<T> target, T element) {
-        boolean isInserted = false;
         if (size() == 0) {
             target.value = element;
             return true;
         }
-
         if (less(element, target.value)) {
-            if (isNull(target.left)) {
-                target.left = new Node<>(element);
-                isInserted = true;
-            } else {
-                isInserted = insert(target.left, element);
-            }
+            return insertLeft(target, element);
         }
-
         if (less(target.value, element)) {
-            if (isNull(target.right)) {
-                target.right = new Node<>(element);
-                isInserted = true;
-            } else {
-                isInserted = insert(target.right, element);
-            }
+            return insertRight(target, element);
         }
+        return false;
+    }
 
-        return isInserted;
+    private boolean insertLeft(Node<T> target, T element) {
+        if (isNull(target.left)) {
+            target.left = new Node<>(element);
+            return true;
+        } else {
+            return insert(target.left, element);
+        }
+    }
+
+    private boolean insertRight(Node<T> target, T element) {
+        if (isNull(target.right)) {
+            target.right = new Node<>(element);
+            return true;
+        } else {
+            return insert(target.right, element);
+        }
     }
 
     @Override
